@@ -3,7 +3,7 @@ import type { TutorialStore, ValidationContext, ValidationResult } from './types
 import { lessons } from './lessons'
 
 export const useTutorialStore = create<TutorialStore>((set, get) => ({
-  // Initial state
+  // Initial state - 'free' by default since new tour handles tutorial
   mode: 'free',
   currentLessonIndex: 0,
   currentStepIndex: 0,

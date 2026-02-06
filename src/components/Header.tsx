@@ -1,10 +1,18 @@
-import { useTutorialStore } from '../tutorial'
+import { useTourStore } from '../tour'
+import { useGitStore } from '../simulator'
 
 export function Header() {
-  const { mode, setMode } = useTutorialStore()
+  const tourActive = useTourStore((state) => state.active)
+  const showCelebration = useTourStore((state) => state.showCelebration)
+  const startTour = useTourStore((state) => state.startTour)
+  const skipTour = useTourStore((state) => state.skipTour)
+  const gitReset = useGitStore((state) => state.reset)
 
-  const toggleMode = () => {
-    setMode(mode === 'free' ? 'tutorial' : 'free')
+  const inTour = tourActive || showCelebration
+
+  const handleRestartTour = () => {
+    gitReset()
+    startTour()
   }
 
   return (
@@ -14,15 +22,21 @@ export function Header() {
         <span className="subtitle">Interactive Git Simulator</span>
       </div>
       <div className="header-right">
-        <button
-          className={`mode-toggle ${mode === 'tutorial' ? 'tutorial-active' : ''}`}
-          onClick={toggleMode}
-        >
-          <span className="mode-toggle-icon">
-            {mode === 'tutorial' ? '\uD83D\uDCDA' : '\uD83D\uDDA5\uFE0F'}
-          </span>
-          {mode === 'tutorial' ? 'Tutorial Mode' : 'Free Mode'}
-        </button>
+        {inTour ? (
+          <button
+            className="mode-toggle tutorial-active"
+            onClick={skipTour}
+          >
+            <span className="mode-toggle-icon">Exit Tour</span>
+          </button>
+        ) : (
+          <button
+            className="mode-toggle"
+            onClick={handleRestartTour}
+          >
+            <span className="mode-toggle-icon">Restart Tour</span>
+          </button>
+        )}
       </div>
     </header>
   )

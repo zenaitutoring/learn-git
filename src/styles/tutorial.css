@@ -295,6 +295,11 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Calm celebration - simpler, no wild animations */
+.celebration-overlay.calm {
+  background: rgba(13, 17, 23, 0.9);
+}
+
 .celebration-content {
   text-align: center;
   animation: celebrationPop 0.5s ease-out;
@@ -335,6 +340,13 @@
   color: #3fb950;
   margin-bottom: 16px;
   text-shadow: 0 0 20px rgba(63, 185, 80, 0.5);
+}
+
+/* Calm celebration title - simpler */
+.celebration-title.calm {
+  font-size: 28px;
+  color: #58a6ff;
+  text-shadow: none;
 }
 
 .celebration-message {
