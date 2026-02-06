@@ -3,6 +3,7 @@ import { TerminalOutput, TerminalInput, type TerminalLineProps } from './Termina
 import { useGitStore } from '../simulator'
 import { executeCommand, type CommandContext } from '../commands'
 import { useTutorialStore } from '../tutorial'
+import { useTourStore } from '../tour'
 import type { ValidationContext } from '../tutorial'
 
 const WELCOME_LINES: TerminalLineProps[] = [
@@ -17,6 +18,7 @@ export function TerminalPanel() {
 
   const store = useGitStore()
   const tutorial = useTutorialStore()
+  const tour = useTourStore()
 
   const branch = store.initialized ? store.getCurrentBranch() : null
 
@@ -78,8 +80,23 @@ export function TerminalPanel() {
         addLines(outputLines)
       }
 
-      // Tutorial validation - happens after command execution
-      if (tutorial.mode === 'tutorial' && !tutorial.lessonCompleted) {
+      // Tour validation (new tooltip-based tour) - takes priority
+      if (tour.active && tour.waitingForAction) {
+        const tourResult = tour.validateCommand(command)
+
+        if (tourResult.type !== 'neutral') {
+          // Show tour feedback
+          addLines([
+            {
+              type: 'output' as const,
+              content: tourResult.message,
+              outputType: tourResult.type === 'success' ? 'success' : 'staged',
+            },
+          ])
+        }
+      }
+      // Legacy tutorial validation (old panel-based tutorial)
+      else if (tutorial.mode === 'tutorial' && !tutorial.lessonCompleted) {
         const validationContext: ValidationContext = {
           command,
           initialized: store.initialized,
@@ -109,7 +126,7 @@ export function TerminalPanel() {
         }
       }
     },
-    [store, addLines, clearTerminal, tutorial]
+    [store, addLines, clearTerminal, tutorial, tour]
   )
 
   const historyUp = useCallback((): string | null => {
