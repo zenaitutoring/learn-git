@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { TerminalOutput, TerminalInput, type TerminalLineProps } from './Terminal'
 import { useGitStore } from '../simulator'
+import { executeCommand, type CommandContext } from '../commands'
 
 const WELCOME_LINES: TerminalLineProps[] = [
   { type: 'command', content: 'Welcome to Learn Git!', prompt: '~' },
@@ -12,10 +13,13 @@ export function TerminalPanel() {
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
 
-  const getCurrentBranch = useGitStore((s) => s.getCurrentBranch)
-  const initialized = useGitStore((s) => s.initialized)
+  const store = useGitStore()
 
-  const branch = initialized ? getCurrentBranch() : null
+  const branch = store.initialized ? store.getCurrentBranch() : null
+
+  const clearTerminal = useCallback(() => {
+    setLines([])
+  }, [])
 
   const addLines = useCallback((newLines: TerminalLineProps[]) => {
     setLines((prev) => [...prev, ...newLines])
@@ -30,16 +34,41 @@ export function TerminalPanel() {
       // Echo the command
       addLines([{ type: 'command', content: command, prompt: '~' }])
 
-      // For now, just show a placeholder - commands will be implemented in Phase 2
-      addLines([
-        {
-          type: 'output',
-          content: `Command not found: ${command.split(' ')[0]}`,
-          outputType: 'error',
-        },
-      ])
+      // Build command context
+      const ctx: CommandContext = {
+        init: store.init,
+        createFile: store.createFile,
+        modifyFile: store.modifyFile,
+        readFile: store.readFile,
+        listFiles: store.listFiles,
+        stage: store.stage,
+        commit: store.commit,
+        createBranch: store.createBranch,
+        checkout: store.checkout,
+        getBranches: store.getBranches,
+        getCurrentBranch: store.getCurrentBranch,
+        initialized: store.initialized,
+        staging: store.staging,
+        workingDirectory: store.workingDirectory,
+        lastCommittedFiles: store.lastCommittedFiles,
+        clearTerminal,
+      }
+
+      // Execute command
+      const results = executeCommand(command, ctx)
+
+      // Convert results to terminal lines
+      const outputLines: TerminalLineProps[] = results.map((r) => ({
+        type: 'output' as const,
+        content: r.text,
+        outputType: r.type,
+      }))
+
+      if (outputLines.length > 0) {
+        addLines(outputLines)
+      }
     },
-    [addLines]
+    [store, addLines, clearTerminal]
   )
 
   const historyUp = useCallback((): string | null => {
