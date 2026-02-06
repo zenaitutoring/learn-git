@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react'
 import { useGitStore } from '../simulator'
 import {
   CommitNode,
@@ -9,6 +10,7 @@ import {
   GraphDefs
 } from './Graph'
 import { calculateLayout } from './Graph/layout'
+import { useTourStore } from '../tour'
 
 export function GraphPanel() {
   const initialized = useGitStore(state => state.initialized)
@@ -18,9 +20,48 @@ export function GraphPanel() {
   const headIsDetached = useGitStore(state => state.headIsDetached)
   const staging = useGitStore(state => state.staging)
 
+  // Tour state for highlighting
+  const tourActive = useTourStore(state => state.active)
+  const getCurrentStep = useTourStore(state => state.getCurrentStep)
+
   const commitCount = Object.keys(commits).length
   const stagedCount = Object.keys(staging.files).length
   const branchCount = branches.length
+
+  // Track previous counts to detect new nodes
+  const prevCommitCountRef = useRef(commitCount)
+  const prevStagedCountRef = useRef(stagedCount)
+  const newCommitRef = useRef<string | null>(null)
+  const newStagedRef = useRef(false)
+
+  useEffect(() => {
+    // Detect new commit
+    if (commitCount > prevCommitCountRef.current) {
+      const commitHashes = Object.keys(commits)
+      newCommitRef.current = commitHashes[commitHashes.length - 1] || null
+
+      // Clear highlight after animation
+      setTimeout(() => {
+        newCommitRef.current = null
+      }, 1500)
+    }
+    prevCommitCountRef.current = commitCount
+
+    // Detect new staged content
+    if (stagedCount > prevStagedCountRef.current) {
+      newStagedRef.current = true
+
+      // Clear highlight after animation
+      setTimeout(() => {
+        newStagedRef.current = false
+      }, 1500)
+    }
+    prevStagedCountRef.current = stagedCount
+  }, [commitCount, stagedCount, commits])
+
+  // Check if tour is highlighting graph
+  const currentStep = tourActive ? getCurrentStep() : null
+  const highlightGraph = currentStep?.target === '.graph-content'
 
   // Calculate layout
   const layout = calculateLayout(
@@ -101,12 +142,16 @@ export function GraphPanel() {
                   x={node.x}
                   y={node.y}
                   hash={node.hash!}
+                  isNew={node.hash === newCommitRef.current}
+                  isHighlighted={highlightGraph && node.hash === Object.keys(commits).pop()}
                 />
               ) : (
                 <StagedNode
                   key={node.id}
                   x={node.x}
                   y={node.y}
+                  isNew={newStagedRef.current}
+                  isHighlighted={highlightGraph}
                 />
               )
             ))}
