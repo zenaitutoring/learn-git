@@ -6,8 +6,7 @@ Tracks all tasks. The orchestrator maintains this file.
 
 | ID | Task Name | Priority | Phase | Status | Link |
 |:---|:----------|:---------|:------|:-------|:-----|
-| T002 | Terminal & Command Interface | 1 | — | READY | [main.md](./planning/T002-terminal-command-interface/main.md) |
-| T003 | Graph Visualization | 2 | — | READY | [main.md](./planning/T003-graph-visualization/main.md) |
+| T003 | Graph Visualization | 1 | — | READY | [main.md](./planning/T003-graph-visualization/main.md) |
 
 Next available task id: T004
 
@@ -31,6 +30,7 @@ T002 and T003 both depend on T001. They can be worked on in parallel after T001 
 | ID | Task Name | Completed | Link |
 |:---|:----------|:----------|:-----|
 | T001 | Project Setup & Core Infrastructure | 2026-02-06 | [main.md](./completed/T001-core-foundation-mvp/main.md) |
+| T002 | Terminal & Command Interface | 2026-02-06 | [main.md](./completed/T002-terminal-command-interface/main.md) |
 
 ---
 
