@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { TerminalOutput, TerminalInput, type TerminalLineProps } from './Terminal'
 import { useGitStore } from '../simulator'
 import { executeCommand, type CommandContext } from '../commands'
+import { useTutorialStore } from '../tutorial'
+import type { ValidationContext } from '../tutorial'
 
 const WELCOME_LINES: TerminalLineProps[] = [
   { type: 'command', content: 'Welcome to Learn Git!', prompt: '~' },
@@ -14,6 +16,7 @@ export function TerminalPanel() {
   const [historyIndex, setHistoryIndex] = useState(-1)
 
   const store = useGitStore()
+  const tutorial = useTutorialStore()
 
   const branch = store.initialized ? store.getCurrentBranch() : null
 
@@ -74,8 +77,39 @@ export function TerminalPanel() {
       if (outputLines.length > 0) {
         addLines(outputLines)
       }
+
+      // Tutorial validation - happens after command execution
+      if (tutorial.mode === 'tutorial' && !tutorial.lessonCompleted) {
+        const validationContext: ValidationContext = {
+          command,
+          initialized: store.initialized,
+          files: Object.keys(store.workingDirectory.files),
+          stagedFiles: Object.keys(store.staging.files),
+          branches: store.getBranches().map((b) => b.name),
+          currentBranch: store.getCurrentBranch(),
+          commitCount: Object.keys(store.commits).length,
+        }
+
+        const result = tutorial.validateCommand(command, validationContext)
+
+        if (result.type !== 'neutral') {
+          // Show tutorial feedback
+          addLines([
+            {
+              type: 'output' as const,
+              content: result.message,
+              outputType: result.type === 'success' ? 'success' : 'staged',
+            },
+          ])
+
+          // If valid, advance to next step
+          if (result.valid) {
+            tutorial.nextStep()
+          }
+        }
+      }
     },
-    [store, addLines, clearTerminal]
+    [store, addLines, clearTerminal, tutorial]
   )
 
   const historyUp = useCallback((): string | null => {
