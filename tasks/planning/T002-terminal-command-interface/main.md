@@ -1,9 +1,9 @@
 # T002: Terminal & Command Interface
 
 ## Meta
-- **Status:** READY
+- **Status:** CODE_REVIEW
 - **Created:** 2026-02-06
-- **Last Updated:** 2026-02-06 (plan reviewed)
+- **Last Updated:** 2026-02-06
 - **Blocked Reason:** —
 - **Depends On:** T001
 
@@ -130,28 +130,41 @@ Create an interactive terminal that parses user commands and executes them again
 _Executor agent fills this section per phase._
 
 ### Phase 1: Terminal UI Component
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `ad630c3`
+- **Files Modified:**
+  - `src/components/Terminal/TerminalLine.tsx` — new component for rendering command/output lines
+  - `src/components/Terminal/TerminalOutput.tsx` — scrollable output container with auto-scroll
+  - `src/components/Terminal/TerminalInput.tsx` — input field with history navigation (up/down)
+  - `src/components/Terminal/index.ts` — barrel exports
+  - `src/components/TerminalPanel.tsx` — refactored to use new components
+  - `src/index.css` — added error, staged, untracked output styles
+- **Notes:** Prompt shows branch indicator from GitStore. Blue arrow, purple branch per mockup.
 
 ### Phase 2: Command Parser + Shell Commands
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `296d27b`
+- **Files Modified:**
+  - `src/commands/types.ts` — command types and context interface
+  - `src/commands/parser.ts` — tokenizer with quote handling and redirect parsing
+  - `src/commands/shell.ts` — shell command handlers (touch, echo, ls, cat, clear, pwd)
+  - `src/commands/index.ts` — command registry and executor
+  - `src/components/TerminalPanel.tsx` — integrated executeCommand
+- **Notes:** Shell commands require git init for file operations (matches real git behavior). Added echo append (>>) support per plan review.
 
 ### Phase 3: Git Command Handlers
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `1596eeb`
+- **Files Modified:**
+  - `src/commands/git.ts` — all git command handlers (init, status, add, commit, branch, checkout, switch)
+  - `src/commands/index.ts` — import and register gitCommands
+- **Notes:** Error output styled red per plan review. All commands connect to GitSimulator from T001.
 
 ---
 
