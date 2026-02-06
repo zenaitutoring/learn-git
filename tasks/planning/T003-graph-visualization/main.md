@@ -1,7 +1,7 @@
 # T003: Graph Visualization
 
 ## Meta
-- **Status:** READY
+- **Status:** CODE_REVIEW
 - **Created:** 2026-02-06
 - **Last Updated:** 2026-02-06
 - **Blocked Reason:** —
@@ -141,31 +141,89 @@ Create an SVG-based graph visualization that reactively updates as the Git simul
 ---
 
 ## Execution Log
-_Executor agent fills this section per phase._
 
 ### Phase 1: SVG Components
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `fc01a60`
+- **Files Modified:**
+  - `src/components/Graph/CommitNode.tsx` — SVG circle with gradient fill + glow + hash text
+  - `src/components/Graph/StagedNode.tsx` — dashed orange circle with "?" inside
+  - `src/components/Graph/BranchLabel.tsx` — colored pill (blue for main, purple for others)
+  - `src/components/Graph/HeadLabel.tsx` — green pill
+  - `src/components/Graph/CommitLine.tsx` — straight and curved SVG paths
+  - `src/components/Graph/Legend.tsx` — legend footer component
+  - `src/components/Graph/GraphDefs.tsx` — SVG defs (gradient, glow filter)
+  - `src/components/Graph/index.ts` — barrel export
+- **Notes:** All components match mockup.html visual styling. GraphDefs defines SVG filter/gradient once.
+
+### Tasks Completed (Phase 1)
+- [x] Task 1.1: CommitNode with gradient + glow + hash text
+- [x] Task 1.2: StagedNode with dashed orange border
+- [x] Task 1.3: BranchLabel as colored pill
+- [x] Task 1.4: HeadLabel as green pill
+- [x] Task 1.5: CommitLine with straight and curved paths
+- [x] Task 1.6: Legend component
 
 ### Phase 2: Graph Layout Algorithm
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `fc01a60` (combined with Phase 1)
+- **Files Modified:**
+  - `src/components/Graph/layout.ts` — calculateLayout() function
+- **Notes:** Implemented custom DAG layout. Main branch leftmost, feature branches offset right. Bottom-to-top flow. Curved lines for branch points. Labels positioned to right of nodes with HEAD below branch label.
+
+### Tasks Completed (Phase 2)
+- [x] Task 2.1: Calculate node positions based on commit history
+- [x] Task 2.2: Main branch leftmost column
+- [x] Task 2.3: Feature branches offset to the right
+- [x] Task 2.4: Curved lines for branch points
+- [x] Task 2.5: Label positioning (no overlap with nodes)
 
 ### Phase 3: Real-time Integration
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `fc01a60` (combined with Phase 1+2)
+- **Files Modified:**
+  - `src/components/GraphPanel.tsx` — updated to use all Graph components and subscribe to store
+- **Notes:** GraphPanel subscribes to zustand store via useGitStore selectors. Graph updates reactively on state changes. Header shows stats: commits count, staged count, branch count, current branch. Empty state handling for pre-init and 0 commits.
+
+### Tasks Completed (Phase 3)
+- [x] Task 3.1: Subscribe to GitSimulator state via useGitStore
+- [x] Task 3.2: Graph updates when git add runs (staged node appears)
+- [x] Task 3.3: Graph updates when git commit runs (commit node appears)
+- [x] Task 3.4: Graph updates when git branch runs (new label)
+- [x] Task 3.5: Graph updates when git checkout runs (HEAD moves)
+- [x] Task 3.6: Header shows stats (commits, staged, branch count, current branch)
+- [x] Task 3.7: Empty state handling (before git init, 0 commits)
+
+### Acceptance Criteria Verification
+
+#### Phase 1
+- [x] CommitNode renders with gradient + glow + hash text
+- [x] StagedNode renders with dashed orange border
+- [x] BranchLabel renders as colored pill
+- [x] HeadLabel renders as green pill
+- [x] CommitLine renders straight and curved paths
+- [x] Legend shows staged/committed/branch examples
+
+#### Phase 2
+- [x] Single commit centered
+- [x] Linear commits stack vertically
+- [x] Branch creates horizontal offset
+- [x] Multiple branches don't overlap
+- [x] Labels don't overlap with nodes
+
+#### Phase 3
+- [x] Graph updates when git add is run (shows staged node)
+- [x] Graph updates when git commit is run (staged -> committed)
+- [x] Graph updates when git branch is run (new label appears)
+- [x] Graph updates when git checkout is run (HEAD moves)
+- [x] Graph header shows stats: "N commits", "M staged", "on branch"
+- [x] Status bar shows current branch and working tree state (existing StatusBar component)
 
 ---
 
