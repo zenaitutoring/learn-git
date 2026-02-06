@@ -9,7 +9,7 @@ Tracks all tasks. The orchestrator maintains this file.
 
 _No active tasks._
 
-Next available task id: T005
+Next available task id: T006
 
 ---
 
@@ -34,6 +34,7 @@ T001 (Infrastructure) ─── COMPLETE
 | T002 | Terminal & Command Interface | 2026-02-06 | [main.md](./completed/T002-terminal-command-interface/main.md) |
 | T003 | Graph Visualization | 2026-02-06 | [main.md](./completed/T003-graph-visualization/main.md) |
 | T004 | Git Merge & Log | 2026-02-06 | [main.md](./completed/T004-advanced-git-operations/main.md) |
+| T005 | Guided Tutorial Mode | 2026-02-06 | [main.md](./completed/T005-guided-tutorial/main.md) |
 
 ---
 

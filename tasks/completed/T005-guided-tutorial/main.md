@@ -1,7 +1,7 @@
 # T005: Guided Tutorial Mode
 
 ## Meta
-- **Status:** CODE_REVIEW
+- **Status:** COMPLETE
 - **Created:** 2026-02-06
 - **Last Updated:** 2026-02-06
 - **Blocked Reason:** —
@@ -249,9 +249,18 @@ _Plan-reviewer agent fills this section._
 ---
 
 ## Code Review Log
-_TBD_
+
+### All Phases
+- **Gate:** PASS
+- **Reviewed:** 2026-02-06
+- **Issues:** 0 critical, 3 major, 6 minor
+- **Summary:** Solid tutorial implementation with good UX for beginners. All acceptance criteria verified. Major issues are around step validation edge cases (multi-command step, unused state tracking, infinite confetti) - none are blockers.
+
+-> Details: `code-review.md`
 
 ---
 
 ## Completion
-_TBD_
+- **Completed:** 2026-02-06
+- **Summary:** Implemented guided tutorial mode with two lessons (First Commit, Branching & Merging), celebration animations, and mode toggle. Beginners can now learn Git step-by-step with hints, validation, and encouragement.
+- **Learnings:** Multi-command steps are tricky to validate - split into separate steps next time.
