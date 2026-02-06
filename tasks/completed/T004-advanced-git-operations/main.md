@@ -1,7 +1,7 @@
 # T004: Git Merge & Log
 
 ## Meta
-- **Status:** CODE_REVIEW
+- **Status:** COMPLETE
 - **Created:** 2026-02-06
 - **Last Updated:** 2026-02-06
 - **Blocked Reason:** —
@@ -208,34 +208,20 @@ _Executor agent fills this section per phase._
 ---
 
 ## Code Review Log
-_Code-reviewer agent fills this section per phase._
 
-### Phase 1
-- **Gate:** —
-- **Issues Found:** —
-- **Revision Count:** 0/3
+### All Phases (Combined Review)
+- **Gate:** PASS
+- **Reviewed:** 2026-02-06
+- **Issues:** 0 critical, 0 major, 4 minor
+- **Summary:** Implementation is functionally correct for a learning application. Merge logic handles fast-forward vs three-way detection properly. Graph visualization connects merge commits to both parents. Log output supports all requested flags. Minor issues do not block completion.
 
-### Phase 2
-- **Gate:** —
-- **Issues Found:** —
-- **Revision Count:** 0/3
-
-### Phase 3
-- **Gate:** —
-- **Issues Found:** —
-- **Revision Count:** 0/3
-
-### Phase 4
-- **Gate:** —
-- **Issues Found:** —
-- **Revision Count:** 0/3
+-> Details: `code-review.md`
 
 ---
 
 ## Completion
-_Final summary when task is complete._
 
-- **Completed:** [DATE]
-- **Summary:** ...
-- **Commits:** ...
-- **Lessons Learned:** ...
+- **Completed:** 2026-02-06
+- **Summary:** Added git merge (fast-forward and three-way) and git log (--oneline, --graph, --all) commands. Graph visualization shows merge commits with two parent lines using appropriate branch colors.
+- **Commits:** `4fc9423`
+- **Lessons Learned:** BFS ancestor detection handles merge commits naturally. Keeping ASCII graph simple is appropriate for learning apps.
