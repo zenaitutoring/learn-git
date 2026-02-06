@@ -1,7 +1,7 @@
 # T006: Focused Tooltip Tour
 
 ## Meta
-- **Status:** EXECUTING_PHASE_1
+- **Status:** CODE_REVIEW
 - **Created:** 2026-02-06
 - **Last Updated:** 2026-02-06
 - **Blocked Reason:** —
@@ -211,7 +211,106 @@ _Plan-reviewer agent fills this section._
 ---
 
 ## Execution Log
-_TBD_
+
+### Phase 1: Tooltip + Spotlight Components
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `b2d2208`
+- **Files Created:**
+  - `src/components/Tour/Tooltip.tsx` - Tooltip with arrow positioning, action buttons
+  - `src/components/Tour/Spotlight.tsx` - CSS clip-path overlay with highlight
+  - `src/components/Tour/index.ts` - Exports
+  - `src/styles/tour.css` - All tour styling with animations
+- **Notes:** Components built as standalone, ready for integration
+
+### Tasks Completed
+- [x] Task 1.1: Create Tooltip component with arrow positioning
+- [x] Task 1.2: Create Spotlight overlay with CSS clip-path cutout
+- [x] Task 1.3: Add tour.css with smooth transitions
+
+### Acceptance Criteria
+- [x] AC1: Tooltip can point at any element by ref or selector
+- [x] AC2: Arrow points in correct direction (auto-calculates)
+- [x] AC3: Spotlight dims page except target area (clip-path)
+- [x] AC4: Smooth transitions (0.3s ease on all transitions)
+
+### Phase 2: Tour Flow Controller
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `b7166b4`
+- **Files Created:**
+  - `src/tour/types.ts` - Tour step and state types
+  - `src/tour/steps.ts` - First commit tour steps (14 steps with repetition)
+  - `src/tour/useTour.ts` - Zustand store for tour state
+  - `src/tour/index.ts` - Exports
+  - `src/components/Tour/TourController.tsx` - Orchestrates tour UI
+- **Files Modified:**
+  - `src/components/TerminalPanel.tsx` - Added tour validation hook
+  - `src/App.tsx` - Integrated TourController, hide old panel when tour active
+  - `src/components/Tour/index.ts` - Export TourController
+- **Notes:** Tour starts active by default, has welcome overlay, skip button
+
+### Tasks Completed
+- [x] Task 2.1: Create tour types and step definitions
+- [x] Task 2.2: Create useTour Zustand store
+- [x] Task 2.3: Create TourController component
+- [x] Task 2.4: Hook tour into TerminalPanel for command validation
+- [x] Task 2.5: Integrate tour into App.tsx
+
+### Acceptance Criteria
+- [x] AC1: Tour progresses through steps (via nextStep)
+- [x] AC2: Waits for user action on action steps (waitingForAction flag)
+- [x] AC3: Auto-advances on explanation steps (button click)
+- [x] AC4: Can exit to free mode anytime (skipTour button)
+
+### Phase 3: Graph Animations + Callouts
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `3301ca5`
+- **Files Modified:**
+  - `src/components/Graph/CommitNode.tsx` - Added isNew, isHighlighted props
+  - `src/components/Graph/StagedNode.tsx` - Added isNew, isHighlighted props
+  - `src/components/GraphPanel.tsx` - Track new nodes, connect to tour
+  - `src/styles/tour.css` - Added graph animation keyframes
+- **Notes:** Animations use CSS only for lightweight performance
+
+### Tasks Completed
+- [x] Task 3.1: Add animation props to CommitNode
+- [x] Task 3.2: Add animation props to StagedNode
+- [x] Task 3.3: Track new nodes in GraphPanel
+- [x] Task 3.4: Add CSS animations for node appearance
+
+### Acceptance Criteria
+- [x] AC1: New nodes animate in (scale + glow via CSS)
+- [x] AC2: Tooltip can point at graph elements (target: .graph-content)
+- [x] AC3: Staged -> Committed transition is animated (highlight ring)
+
+### Phase 4: Polish
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `dd0ea32`
+- **Files Modified:**
+  - `src/tutorial/useTutorial.ts` - Comment clarifying free mode default
+  - `src/components/Header.tsx` - Exit Tour / Restart Tour toggle
+  - `src/components/Celebration.tsx` - Removed confetti, calm message only
+  - `src/styles/tutorial.css` - Added calm celebration styles
+- **Notes:** Tour is active by default, old tutorial panel hidden when tour active
+
+### Tasks Completed
+- [x] Task 4.1: Tour starts active by default
+- [x] Task 4.2: Remove wild confetti, keep calm message
+- [x] Task 4.3: Update Header with clean tour toggle
+- [x] Task 4.4: Old TutorialPanel integrated (hidden when tour active)
+
+### Acceptance Criteria
+- [x] AC1: App starts in tutorial/tour mode by default
+- [x] AC2: Celebration is subtle (no confetti, just message)
+- [x] AC3: Easy escape to free mode (Skip Tour button, Header toggle)
+- [x] AC4: Old TutorialPanel replaced/hidden by tour system
 
 ---
 
