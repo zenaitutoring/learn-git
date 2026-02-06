@@ -76,7 +76,8 @@ export function Spotlight({
     window.addEventListener('scroll', updateRect, true)
 
     // Poll for changes in case target moves (e.g., animations)
-    const interval = setInterval(updateRect, 100)
+    // Using 500ms to reduce CPU usage while still catching layout shifts
+    const interval = setInterval(updateRect, 500)
 
     return () => {
       window.removeEventListener('resize', updateRect)

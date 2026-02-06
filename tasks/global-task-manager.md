@@ -6,10 +6,9 @@ Tracks all tasks. The orchestrator maintains this file.
 
 | ID | Task Name | Priority | Phase | Status | Link |
 |:---|:----------|:---------|:------|:-------|:-----|
+| T006 | Focused Tooltip Tour | 1 | — | PLANNING | [main.md](./planning/T006-tooltip-tour/main.md) |
 
-_No active tasks._
-
-Next available task id: T006
+Next available task id: T007
 
 ---
 

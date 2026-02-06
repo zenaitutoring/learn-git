@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useGitStore } from '../simulator'
 import {
   CommitNode,
@@ -31,33 +31,44 @@ export function GraphPanel() {
   // Track previous counts to detect new nodes
   const prevCommitCountRef = useRef(commitCount)
   const prevStagedCountRef = useRef(stagedCount)
-  const newCommitRef = useRef<string | null>(null)
-  const newStagedRef = useRef(false)
+
+  // Use state for animation tracking so changes trigger re-renders
+  const [newCommitHash, setNewCommitHash] = useState<string | null>(null)
+  const [newStaged, setNewStaged] = useState(false)
 
   useEffect(() => {
     // Detect new commit
     if (commitCount > prevCommitCountRef.current) {
       const commitHashes = Object.keys(commits)
-      newCommitRef.current = commitHashes[commitHashes.length - 1] || null
+      const latestHash = commitHashes[commitHashes.length - 1] || null
+      setNewCommitHash(latestHash)
 
       // Clear highlight after animation
-      setTimeout(() => {
-        newCommitRef.current = null
+      const timer = setTimeout(() => {
+        setNewCommitHash(null)
       }, 1500)
+
+      prevCommitCountRef.current = commitCount
+      return () => clearTimeout(timer)
     }
     prevCommitCountRef.current = commitCount
+  }, [commitCount, commits])
 
+  useEffect(() => {
     // Detect new staged content
     if (stagedCount > prevStagedCountRef.current) {
-      newStagedRef.current = true
+      setNewStaged(true)
 
       // Clear highlight after animation
-      setTimeout(() => {
-        newStagedRef.current = false
+      const timer = setTimeout(() => {
+        setNewStaged(false)
       }, 1500)
+
+      prevStagedCountRef.current = stagedCount
+      return () => clearTimeout(timer)
     }
     prevStagedCountRef.current = stagedCount
-  }, [commitCount, stagedCount, commits])
+  }, [stagedCount])
 
   // Check if tour is highlighting graph
   const currentStep = tourActive ? getCurrentStep() : null
@@ -142,7 +153,7 @@ export function GraphPanel() {
                   x={node.x}
                   y={node.y}
                   hash={node.hash!}
-                  isNew={node.hash === newCommitRef.current}
+                  isNew={node.hash === newCommitHash}
                   isHighlighted={highlightGraph && node.hash === Object.keys(commits).pop()}
                 />
               ) : (
@@ -150,7 +161,7 @@ export function GraphPanel() {
                   key={node.id}
                   x={node.x}
                   y={node.y}
-                  isNew={newStagedRef.current}
+                  isNew={newStaged}
                   isHighlighted={highlightGraph}
                 />
               )
