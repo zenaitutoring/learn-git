@@ -6,10 +6,9 @@ Tracks all tasks. The orchestrator maintains this file.
 
 | ID | Task Name | Priority | Phase | Status | Link |
 |:---|:----------|:---------|:------|:-------|:-----|
+| T004 | Advanced Git Operations | 1 | — | PLANNING | [main.md](./planning/T004-advanced-git-operations/main.md) |
 
-_No active tasks. All initial tasks complete._
-
-Next available task id: T004
+Next available task id: T005
 
 ---
 
