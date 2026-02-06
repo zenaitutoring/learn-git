@@ -172,5 +172,5 @@ _Final summary when task is complete._
 
 - **Completed:** 2026-02-06
 - **Summary:** Successfully set up Docker-based Vite+React+TypeScript project with split-panel layout matching mockup. Implemented in-memory Git simulator using Zustand with full support for: init, file operations, staging, commits, branches, and checkout. Components are wired to reactive state.
-- **Commits:** Pending (to be committed after code review)
+- **Commits:** f62dd11
 - **Lessons Learned:** Port 4003 used (4000-4002 already registered). Vite-env.d.ts needed for CSS imports in TypeScript.
