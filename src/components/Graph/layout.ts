@@ -167,17 +167,30 @@ export function calculateLayout(
     const childNode = nodes.find(n => n.id === commit.id)
     if (!childNode) return
 
-    commit.parentIds.forEach(parentId => {
+    const isMergeCommit = commit.parentIds.length > 1
+
+    commit.parentIds.forEach((parentId, parentIndex) => {
       const parentNode = nodes.find(n => n.id === parentId)
       if (!parentNode) return
 
       const childColumn = commitColumns[commit.id] ?? 0
       const parentColumn = commitColumns[parentId] ?? 0
-      const branchName = commitBranch[commit.id] ?? 'main'
-      const color = branchName === 'main' ? MAIN_COLOR : FEATURE_COLOR
+
+      // For merge commits, first parent uses child's branch color,
+      // second parent uses the parent's branch color (showing where merge came from)
+      let color: string
+      if (isMergeCommit && parentIndex > 0) {
+        // Second parent - use parent's branch color
+        const parentBranchName = commitBranch[parentId] ?? 'main'
+        color = parentBranchName === 'main' ? MAIN_COLOR : FEATURE_COLOR
+      } else {
+        // First parent or non-merge - use child's branch color
+        const branchName = commitBranch[commit.id] ?? 'main'
+        color = branchName === 'main' ? MAIN_COLOR : FEATURE_COLOR
+      }
 
       // Line from parent (below) to child (above)
-      // Curved if columns differ (branching)
+      // Curved if columns differ (branching/merging)
       const isCurved = childColumn !== parentColumn
 
       lines.push({

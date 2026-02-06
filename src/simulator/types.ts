@@ -38,6 +38,13 @@ export interface GitState {
   lastCommittedFiles: Record<string, string> // files at HEAD commit
 }
 
+export interface MergeResult {
+  type: 'fast-forward' | 'merge'
+  fromCommit: string
+  toCommit: string
+  newCommitId?: string // Only for three-way merge
+}
+
 export interface GitStore extends GitState {
   // Actions
   init: () => void
@@ -51,9 +58,11 @@ export interface GitStore extends GitState {
   commit: (message: string) => string
   createBranch: (name: string) => void
   checkout: (target: string) => void
+  merge: (branchName: string) => MergeResult
   getBranches: () => Branch[]
   getCurrentBranch: () => string | null
   getCommit: (id: string) => Commit | undefined
   getLog: () => Commit[]
+  getAllCommits: () => Commit[]
   reset: () => void
 }

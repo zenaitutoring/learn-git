@@ -1,7 +1,7 @@
 # T004: Git Merge & Log
 
 ## Meta
-- **Status:** PLANNING
+- **Status:** CODE_REVIEW
 - **Created:** 2026-02-06
 - **Last Updated:** 2026-02-06
 - **Blocked Reason:** —
@@ -164,36 +164,46 @@ _Plan-reviewer agent fills this section._
 _Executor agent fills this section per phase._
 
 ### Phase 1: Simulator Merge Logic
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `8346e3b`
+- **Files Modified:**
+  - `src/simulator/types.ts` — Added MergeResult interface, merge() and getAllCommits() to GitStore
+  - `src/simulator/GitSimulator.ts` — Implemented merge() with fast-forward and three-way logic, added getAllCommits()
+  - `src/simulator/index.ts` — Exported MergeResult type
+  - `src/commands/git.ts` — Fixed unused variable warnings (pre-existing)
+- **Notes:** Commit type already had parentIds as string[]. Implemented isAncestor helper for detecting fast-forward vs three-way.
 
 ### Phase 2: Git Merge Command
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `8346e3b`
+- **Files Modified:**
+  - `src/commands/git.ts` — Added merge command handler with fast-forward and three-way output
+  - `src/commands/types.ts` — Extended CommandContext with merge, getCommit, getLog, getAllCommits, commits, head, headIsDetached
+  - `src/components/TerminalPanel.tsx` — Passed new context fields to command execution
+- **Notes:** Outputs "Fast-forward" or "Merge made by the 'ort' strategy." as per plan
 
 ### Phase 3: Graph Merge Visualization
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `8346e3b`
+- **Files Modified:**
+  - `src/components/Graph/layout.ts` — Updated line color logic for merge commits (second parent uses parent's branch color)
+  - `src/components/Graph/CommitLine.tsx` — Refactored curved path handling for both branch and merge directions
+- **Notes:** The layout already handled multiple parents via parentIds iteration. Added logic to distinguish merge line colors.
 
 ### Phase 4: Git Log Command
-- **Status:** PENDING
-- **Started:** —
-- **Completed:** —
-- **Commits:** —
-- **Files Modified:** —
-- **Notes:** —
+- **Status:** COMPLETE
+- **Started:** 2026-02-06
+- **Completed:** 2026-02-06
+- **Commits:** `8346e3b`
+- **Files Modified:**
+  - `src/commands/git.ts` — Added log command handler with --oneline, --graph, --all flags
+- **Notes:** Implemented full format, oneline format, and ASCII graph visualization. Shows branch decorations and HEAD pointer.
 
 ---
 

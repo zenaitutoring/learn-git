@@ -1,4 +1,5 @@
 import type { OutputType } from '../components/Terminal'
+import type { MergeResult, Commit } from '../simulator/types'
 
 export interface CommandOutput {
   text: string
@@ -18,11 +19,18 @@ export interface CommandContext {
   commit: (message: string) => string
   createBranch: (name: string) => void
   checkout: (target: string) => void
+  merge: (branchName: string) => MergeResult
   getBranches: () => { name: string; commitId: string }[]
   getCurrentBranch: () => string | null
+  getCommit: (id: string) => Commit | undefined
+  getLog: () => Commit[]
+  getAllCommits: () => Commit[]
 
   // State
   initialized: boolean
+  commits: Record<string, Commit>
+  head: string
+  headIsDetached: boolean
   staging: { files: Record<string, string> }
   workingDirectory: { files: Record<string, string> }
   lastCommittedFiles: Record<string, string>

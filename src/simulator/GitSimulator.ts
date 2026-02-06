@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { GitStore, Commit, Branch, FileInfo } from './types'
+import type { GitStore, Commit, Branch, FileInfo, MergeResult } from './types'
 import * as VFS from './VirtualFileSystem'
 
 function generateCommitId(): string {
@@ -231,6 +231,149 @@ export const useGitStore = create<GitStore>((set, get) => ({
     }
 
     return commits
+  },
+
+  getAllCommits: (): Commit[] => {
+    const state = get()
+    return Object.values(state.commits).sort((a, b) => a.timestamp - b.timestamp)
+  },
+
+  merge: (branchName: string): MergeResult => {
+    const state = get()
+    if (!state.initialized) {
+      throw new Error('Repository not initialized. Run git init first.')
+    }
+
+    // Cannot merge if in detached HEAD state
+    if (state.headIsDetached) {
+      throw new Error('Cannot merge in detached HEAD state.')
+    }
+
+    // Check if branch exists
+    const targetBranch = state.branches.find(b => b.name === branchName)
+    if (!targetBranch) {
+      throw new Error(`Branch '${branchName}' not found.`)
+    }
+
+    // Cannot merge branch into itself
+    const currentBranchName = state.head
+    if (branchName === currentBranchName) {
+      throw new Error('Cannot merge a branch into itself.')
+    }
+
+    const currentBranch = state.branches.find(b => b.name === currentBranchName)
+    if (!currentBranch) {
+      throw new Error('Current branch not found.')
+    }
+
+    const currentCommitId = currentBranch.commitId
+    const targetCommitId = targetBranch.commitId
+
+    // If target has no commits, nothing to merge
+    if (!targetCommitId) {
+      throw new Error('Nothing to merge.')
+    }
+
+    // Helper: check if ancestor is an ancestor of descendant
+    const isAncestor = (ancestorId: string, descendantId: string): boolean => {
+      if (!ancestorId || !descendantId) return false
+      if (ancestorId === descendantId) return true
+
+      const visited = new Set<string>()
+      const queue = [descendantId]
+
+      while (queue.length > 0) {
+        const id = queue.shift()!
+        if (id === ancestorId) return true
+        if (visited.has(id)) continue
+        visited.add(id)
+
+        const commit = state.commits[id]
+        if (commit) {
+          queue.push(...commit.parentIds)
+        }
+      }
+      return false
+    }
+
+    // Case 1: Current branch has no commits - fast-forward
+    if (!currentCommitId) {
+      const targetCommit = state.commits[targetCommitId]
+      const updatedBranches = state.branches.map(b =>
+        b.name === currentBranchName ? { ...b, commitId: targetCommitId } : b
+      )
+      set({
+        branches: updatedBranches,
+        workingDirectory: { files: targetCommit?.files ?? {} },
+        lastCommittedFiles: targetCommit?.files ?? {}
+      })
+      return {
+        type: 'fast-forward',
+        fromCommit: '',
+        toCommit: targetCommitId
+      }
+    }
+
+    // Case 2: Already up to date (target is ancestor of current)
+    if (isAncestor(targetCommitId, currentCommitId)) {
+      throw new Error('Already up to date.')
+    }
+
+    // Case 3: Fast-forward (current is ancestor of target)
+    if (isAncestor(currentCommitId, targetCommitId)) {
+      const targetCommit = state.commits[targetCommitId]
+      const updatedBranches = state.branches.map(b =>
+        b.name === currentBranchName ? { ...b, commitId: targetCommitId } : b
+      )
+      set({
+        branches: updatedBranches,
+        workingDirectory: { files: targetCommit?.files ?? {} },
+        lastCommittedFiles: targetCommit?.files ?? {}
+      })
+      return {
+        type: 'fast-forward',
+        fromCommit: currentCommitId,
+        toCommit: targetCommitId
+      }
+    }
+
+    // Case 4: Three-way merge (neither is ancestor of the other)
+    const currentCommit = state.commits[currentCommitId]
+    const targetCommit = state.commits[targetCommitId]
+
+    // Merge files: combine files from both commits
+    // In a real git, this would handle conflicts - we just combine for now
+    const mergedFiles = {
+      ...currentCommit?.files,
+      ...targetCommit?.files
+    }
+
+    const id = generateCommitId()
+    const mergeCommit: Commit = {
+      id,
+      message: `Merge branch '${branchName}'`,
+      parentIds: [currentCommitId, targetCommitId],
+      timestamp: Date.now(),
+      files: mergedFiles
+    }
+
+    const updatedBranches = state.branches.map(b =>
+      b.name === currentBranchName ? { ...b, commitId: id } : b
+    )
+
+    set({
+      commits: { ...state.commits, [id]: mergeCommit },
+      branches: updatedBranches,
+      workingDirectory: { files: mergedFiles },
+      lastCommittedFiles: mergedFiles
+    })
+
+    return {
+      type: 'merge',
+      fromCommit: currentCommitId,
+      toCommit: targetCommitId,
+      newCommitId: id
+    }
   },
 
   reset: () => {

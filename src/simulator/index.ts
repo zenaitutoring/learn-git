@@ -7,5 +7,6 @@ export type {
   FileStatus,
   FileInfo,
   GitState,
-  GitStore
+  GitStore,
+  MergeResult
 } from './types'
