@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Git - Mockup v2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            background: #1a1a2e;
+            color: #eee;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #16213e;
+            padding: 12px 24px;
+            border-bottom: 1px solid #0f3460;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e94560;
+        }
+
+        header .subtitle {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .mockup-note {
+            background: #2d1b4e;
+            border: 1px solid #6b46c1;
+            color: #d6bcfa;
+            padding: 10px 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mockup-note strong {
+            color: #a78bfa;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .terminal-panel {
+            flex: 1;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #0f3460;
+            min-width: 400px;
+        }
+
+        .terminal-header {
+            background: #161b22;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #888;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-header::before {
+            content: '';
+            display: flex;
+            gap: 6px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 6px;
+            margin-right: 12px;
+        }
+
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .window-controls .close { background: #ff5f56; }
+        .window-controls .minimize { background: #ffbd2e; }
+        .window-controls .maximize { background: #27ca40; }
+
+        .terminal-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .terminal-line {
+            margin-bottom: 2px;
+        }
+
+        .prompt {
+            color: #7ee787;
+        }
+
+        .prompt::before {
+            content: '➜ ';
+            color: #58a6ff;
+        }
+
+        .command {
+            color: #c9d1d9;
+        }
+
+        .output {
+            color: #8b949e;
+            padding-left: 20px;
+        }
+
+        .success {
+            color: #3fb950;
+        }
+
+        .staged-text {
+            color: #f0883e;
+        }
+
+        .terminal-input {
+            display: flex;
+            padding: 12px 16px;
+            background: #161b22;
+            border-top: 1px solid #30363d;
+            align-items: center;
+        }
+
+        .terminal-input .prompt-symbol {
+            color: #58a6ff;
+            margin-right: 4px;
+        }
+
+        .terminal-input .prompt-symbol::after {
+            content: ' ';
+        }
+
+        .terminal-input .branch-indicator {
+            color: #a371f7;
+            margin-right: 8px;
+        }
+
+        .terminal-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #c9d1d9;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .terminal-input .cursor {
+            width: 8px;
+            height: 18px;
+            background: #58a6ff;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .graph-panel {
+            flex: 1.2;
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            min-width: 450px;
+        }
+
+        .graph-header {
+            background: #16213e;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #888;
+            border-bottom: 1px solid #0f3460;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .graph-status {
+            display: flex;
+            gap: 16px;
+        }
+
+        .graph-status .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .graph-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .graph-status .dot.staged { background: #f0883e; }
+        .graph-status .dot.committed { background: #3fb950; }
+
+        .graph-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: auto;
+        }
+
+        /* SVG-based graph for cleaner rendering */
+        .graph-svg {
+            overflow: visible;
+        }
+
+        /* Legend at bottom */
+        .graph-footer {
+            padding: 16px 24px;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+        }
+
+        .legend {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .legend-node {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+        }
+
+        .legend-node.committed {
+            background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.4);
+        }
+
+        .legend-node.staged {
+            background: transparent;
+            border: 2px dashed #f0883e;
+        }
+
+        .legend-label {
+            width: auto;
+            height: auto;
+            border-radius: 0;
+            background: #58a6ff;
+            color: #0d1117;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Scenario tabs */
+        .scenario-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+            flex-wrap: wrap;
+        }
+
+        .scenario-tab {
+            padding: 8px 16px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .scenario-tab:hover {
+            background: #30363d;
+            border-color: #484f58;
+        }
+
+        .scenario-tab.active {
+            background: #e94560;
+            border-color: #e94560;
+            color: white;
+        }
+
+        .scenario {
+            display: none;
+        }
+
+        .scenario.active {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Status bar */
+        .status-bar {
+            background: #16213e;
+            padding: 10px 24px;
+            border-top: 1px solid #0f3460;
+            display: flex;
+            gap: 32px;
+            font-size: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-item .label {
+            color: #6e7681;
+        }
+
+        .status-item .value {
+            color: #c9d1d9;
+        }
+
+        .status-item .value.modified {
+            color: #f0883e;
+        }
+
+        .status-item .value.branch {
+            color: #a371f7;
+            font-weight: 600;
+        }
+
+        .status-item .value.clean {
+            color: #3fb950;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Learn Git</h1>
+        <span class="subtitle">Interactive Git Simulator</span>
+    </header>
+
+    <div class="mockup-note">
+        <strong>Mockup Note:</strong> These tabs show different states. In the real app, you'll have ONE terminal and the graph will update LIVE as you type commands.
+    </div>
+
+    <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showScenario(0)">1. After git add</button>
+        <button class="scenario-tab" onclick="showScenario(1)">2. After commit</button>
+        <button class="scenario-tab" onclick="showScenario(2)">3. Create branch</button>
+        <button class="scenario-tab" onclick="showScenario(3)">4. Diverged branches</button>
+    </div>
+
+    <!-- Scenario 1: After git add (staged state) -->
+    <div class="container scenario active" id="scenario-0">
+        <div class="terminal-panel">
+            <div class="terminal-header">
+                <div class="window-controls">
+                    <span class="close"></span>
+                    <span class="minimize"></span>
+                    <span class="maximize"></span>
+                </div>
+                Terminal — bash
+            </div>
+            <div class="terminal-content">
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git init</span></div>
+                <div class="terminal-line output success">Initialized empty Git repository in /project/.git/</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">touch readme.md</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">echo "# My Project" > readme.md</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git status</span></div>
+                <div class="terminal-line output">Untracked files:</div>
+                <div class="terminal-line output" style="color: #f85149;">  readme.md</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git add readme.md</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git status</span></div>
+                <div class="terminal-line output">Changes to be committed:</div>
+                <div class="terminal-line output staged-text">  new file: readme.md</div>
+            </div>
+            <div class="terminal-input">
+                <span class="prompt-symbol">➜</span>
+                <span class="branch-indicator">(main)</span>
+                <input type="text" placeholder="" readonly>
+                <div class="cursor"></div>
+            </div>
+        </div>
+        <div class="graph-panel">
+            <div class="graph-header">
+                <span>Repository Graph</span>
+                <div class="graph-status">
+                    <div class="stat"><div class="dot staged"></div> 1 staged</div>
+                </div>
+            </div>
+            <div class="graph-content">
+                <svg class="graph-svg" width="280" height="120" viewBox="0 0 280 120">
+                    <!-- Staged node (dashed circle) -->
+                    <circle cx="60" cy="60" r="16" fill="none" stroke="#f0883e" stroke-width="3" stroke-dasharray="6 4"/>
+                    <text x="60" cy="65" text-anchor="middle" fill="#f0883e" font-size="11" font-weight="bold">?</text>
+
+                    <!-- Branch label - main -->
+                    <rect x="90" y="48" width="50" height="24" rx="6" fill="#58a6ff"/>
+                    <text x="115" y="65" text-anchor="middle" fill="#0d1117" font-size="11" font-weight="bold">main</text>
+
+                    <!-- HEAD label - positioned below -->
+                    <rect x="90" y="78" width="50" height="22" rx="6" fill="#238636"/>
+                    <text x="115" y="93" text-anchor="middle" fill="white" font-size="10" font-weight="bold">HEAD</text>
+                </svg>
+            </div>
+            <div class="graph-footer">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-node staged"></div>
+                        <span>Staged</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-node committed"></div>
+                        <span>Committed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-label">main</div>
+                        <span>Branch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario 2: After commit -->
+    <div class="container scenario" id="scenario-1">
+        <div class="terminal-panel">
+            <div class="terminal-header">
+                <div class="window-controls">
+                    <span class="close"></span>
+                    <span class="minimize"></span>
+                    <span class="maximize"></span>
+                </div>
+                Terminal — bash
+            </div>
+            <div class="terminal-content">
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git add readme.md</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git commit -m "initial commit"</span></div>
+                <div class="terminal-line output success">[main a1b2c3d] initial commit</div>
+                <div class="terminal-line output"> 1 file changed, 1 insertion(+)</div>
+                <div class="terminal-line output"> create mode 100644 readme.md</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git log --oneline</span></div>
+                <div class="terminal-line output"><span style="color: #f0883e;">a1b2c3d</span> <span style="color: #58a6ff;">(HEAD -> main)</span> initial commit</div>
+            </div>
+            <div class="terminal-input">
+                <span class="prompt-symbol">➜</span>
+                <span class="branch-indicator">(main)</span>
+                <input type="text" placeholder="" readonly>
+                <div class="cursor"></div>
+            </div>
+        </div>
+        <div class="graph-panel">
+            <div class="graph-header">
+                <span>Repository Graph</span>
+                <div class="graph-status">
+                    <div class="stat"><div class="dot committed"></div> 1 commit</div>
+                </div>
+            </div>
+            <div class="graph-content">
+                <svg class="graph-svg" width="300" height="120" viewBox="0 0 300 120">
+                    <!-- Glow filter for committed nodes -->
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#e94560"/>
+                            <stop offset="100%" style="stop-color:#c73e54"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Committed node -->
+                    <circle cx="60" cy="60" r="16" fill="url(#nodeGradient)" filter="url(#glow)"/>
+                    <text x="60" y="65" text-anchor="middle" fill="white" font-size="10" font-weight="bold">a1b</text>
+
+                    <!-- Labels container - stacked vertically to the right -->
+                    <g transform="translate(90, 38)">
+                        <!-- main branch label -->
+                        <rect x="0" y="0" width="50" height="22" rx="6" fill="#58a6ff"/>
+                        <text x="25" y="15" text-anchor="middle" fill="#0d1117" font-size="11" font-weight="bold">main</text>
+
+                        <!-- HEAD label below -->
+                        <rect x="0" y="28" width="50" height="22" rx="6" fill="#238636"/>
+                        <text x="25" y="43" text-anchor="middle" fill="white" font-size="10" font-weight="bold">HEAD</text>
+                    </g>
+                </svg>
+            </div>
+            <div class="graph-footer">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-node staged"></div>
+                        <span>Staged</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-node committed"></div>
+                        <span>Committed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-label">main</div>
+                        <span>Branch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario 3: Create branch -->
+    <div class="container scenario" id="scenario-2">
+        <div class="terminal-panel">
+            <div class="terminal-header">
+                <div class="window-controls">
+                    <span class="close"></span>
+                    <span class="minimize"></span>
+                    <span class="maximize"></span>
+                </div>
+                Terminal — bash
+            </div>
+            <div class="terminal-content">
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git branch feature</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git checkout feature</span></div>
+                <div class="terminal-line output success">Switched to branch 'feature'</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">touch feature.js</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git add feature.js</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git commit -m "add feature file"</span></div>
+                <div class="terminal-line output success">[feature b2c3d4e] add feature file</div>
+                <div class="terminal-line output"> 1 file changed, 0 insertions(+)</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git log --oneline --all</span></div>
+                <div class="terminal-line output"><span style="color: #f0883e;">b2c3d4e</span> <span style="color: #a371f7;">(HEAD -> feature)</span> add feature file</div>
+                <div class="terminal-line output"><span style="color: #f0883e;">a1b2c3d</span> <span style="color: #58a6ff;">(main)</span> initial commit</div>
+            </div>
+            <div class="terminal-input">
+                <span class="prompt-symbol">➜</span>
+                <span class="branch-indicator" style="color: #a371f7;">(feature)</span>
+                <input type="text" placeholder="" readonly>
+                <div class="cursor"></div>
+            </div>
+        </div>
+        <div class="graph-panel">
+            <div class="graph-header">
+                <span>Repository Graph</span>
+                <div class="graph-status">
+                    <div class="stat"><div class="dot committed"></div> 2 commits</div>
+                </div>
+            </div>
+            <div class="graph-content">
+                <svg class="graph-svg" width="360" height="180" viewBox="0 0 360 180">
+                    <defs>
+                        <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <linearGradient id="nodeGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#e94560"/>
+                            <stop offset="100%" style="stop-color:#c73e54"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- First commit (initial) -->
+                    <circle cx="60" cy="110" r="16" fill="url(#nodeGradient2)" filter="url(#glow2)"/>
+                    <text x="60" y="115" text-anchor="middle" fill="white" font-size="10" font-weight="bold">a1b</text>
+
+                    <!-- main label on first commit -->
+                    <rect x="85" y="99" width="50" height="22" rx="6" fill="#58a6ff"/>
+                    <text x="110" y="114" text-anchor="middle" fill="#0d1117" font-size="11" font-weight="bold">main</text>
+
+                    <!-- Connection line (curved branch) -->
+                    <path d="M 60 94 L 60 70 Q 60 55 75 55 L 140 55" stroke="#a371f7" stroke-width="3" fill="none"/>
+
+                    <!-- Second commit (feature) -->
+                    <circle cx="160" cy="55" r="16" fill="url(#nodeGradient2)" filter="url(#glow2)"/>
+                    <text x="160" y="60" text-anchor="middle" fill="white" font-size="10" font-weight="bold">b2c</text>
+
+                    <!-- feature label -->
+                    <rect x="185" y="35" width="65" height="22" rx="6" fill="#a371f7"/>
+                    <text x="217" y="50" text-anchor="middle" fill="white" font-size="11" font-weight="bold">feature</text>
+
+                    <!-- HEAD label - below feature label -->
+                    <rect x="185" y="62" width="50" height="22" rx="6" fill="#238636"/>
+                    <text x="210" y="77" text-anchor="middle" fill="white" font-size="10" font-weight="bold">HEAD</text>
+                </svg>
+            </div>
+            <div class="graph-footer">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-node staged"></div>
+                        <span>Staged</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-node committed"></div>
+                        <span>Committed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-label">main</div>
+                        <span>Branch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario 4: Diverged branches -->
+    <div class="container scenario" id="scenario-3">
+        <div class="terminal-panel">
+            <div class="terminal-header">
+                <div class="window-controls">
+                    <span class="close"></span>
+                    <span class="minimize"></span>
+                    <span class="maximize"></span>
+                </div>
+                Terminal — bash
+            </div>
+            <div class="terminal-content">
+                <div class="terminal-line" style="color: #6e7681;">... continued from previous ...</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git checkout main</span></div>
+                <div class="terminal-line output success">Switched to branch 'main'</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">echo "updated" >> readme.md</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git add readme.md</span></div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git commit -m "update readme"</span></div>
+                <div class="terminal-line output success">[main c3d4e5f] update readme</div>
+                <div class="terminal-line"><span class="prompt">~</span> <span class="command">git log --oneline --all --graph</span></div>
+                <div class="terminal-line output">* <span style="color: #f0883e;">c3d4e5f</span> <span style="color: #58a6ff;">(HEAD -> main)</span> update readme</div>
+                <div class="terminal-line output">| * <span style="color: #f0883e;">b2c3d4e</span> <span style="color: #a371f7;">(feature)</span> add feature file</div>
+                <div class="terminal-line output">|/</div>
+                <div class="terminal-line output">* <span style="color: #f0883e;">a1b2c3d</span> initial commit</div>
+            </div>
+            <div class="terminal-input">
+                <span class="prompt-symbol">➜</span>
+                <span class="branch-indicator">(main)</span>
+                <input type="text" placeholder="" readonly>
+                <div class="cursor"></div>
+            </div>
+        </div>
+        <div class="graph-panel">
+            <div class="graph-header">
+                <span>Repository Graph</span>
+                <div class="graph-status">
+                    <div class="stat"><div class="dot committed"></div> 3 commits</div>
+                    <div class="stat" style="color: #a371f7;">2 branches</div>
+                </div>
+            </div>
+            <div class="graph-content">
+                <svg class="graph-svg" width="400" height="220" viewBox="0 0 400 220">
+                    <defs>
+                        <filter id="glow3" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <linearGradient id="nodeGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#e94560"/>
+                            <stop offset="100%" style="stop-color:#c73e54"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Initial commit -->
+                    <circle cx="70" cy="160" r="16" fill="url(#nodeGradient3)" filter="url(#glow3)"/>
+                    <text x="70" y="165" text-anchor="middle" fill="white" font-size="10" font-weight="bold">a1b</text>
+
+                    <!-- Line up to main branch -->
+                    <line x1="70" y1="144" x2="70" y2="100" stroke="#58a6ff" stroke-width="3"/>
+
+                    <!-- Main's second commit -->
+                    <circle cx="70" cy="85" r="16" fill="url(#nodeGradient3)" filter="url(#glow3)"/>
+                    <text x="70" y="90" text-anchor="middle" fill="white" font-size="10" font-weight="bold">c3d</text>
+
+                    <!-- main + HEAD labels -->
+                    <rect x="95" y="65" width="50" height="22" rx="6" fill="#58a6ff"/>
+                    <text x="120" y="80" text-anchor="middle" fill="#0d1117" font-size="11" font-weight="bold">main</text>
+
+                    <rect x="95" y="92" width="50" height="22" rx="6" fill="#238636"/>
+                    <text x="120" y="107" text-anchor="middle" fill="white" font-size="10" font-weight="bold">HEAD</text>
+
+                    <!-- Branch line to feature (curved) -->
+                    <path d="M 86 160 Q 120 160 150 130 L 180 100" stroke="#a371f7" stroke-width="3" fill="none"/>
+
+                    <!-- Feature commit -->
+                    <circle cx="195" cy="85" r="16" fill="url(#nodeGradient3)" filter="url(#glow3)"/>
+                    <text x="195" y="90" text-anchor="middle" fill="white" font-size="10" font-weight="bold">b2c</text>
+
+                    <!-- feature label -->
+                    <rect x="220" y="74" width="65" height="22" rx="6" fill="#a371f7"/>
+                    <text x="252" y="89" text-anchor="middle" fill="white" font-size="11" font-weight="bold">feature</text>
+                </svg>
+            </div>
+            <div class="graph-footer">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-node staged"></div>
+                        <span>Staged</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-node committed"></div>
+                        <span>Committed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-label">main</div>
+                        <span>Branch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-item">
+            <span class="label">Files:</span>
+            <span class="value">readme.md, feature.js</span>
+        </div>
+        <div class="status-item">
+            <span class="label">Branch:</span>
+            <span class="value branch">main</span>
+        </div>
+        <div class="status-item">
+            <span class="label">Working tree:</span>
+            <span class="value clean">clean</span>
+        </div>
+    </div>
+
+    <script>
+        function showScenario(index) {
+            document.querySelectorAll('.scenario').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('scenario-' + index).classList.add('active');
+            document.querySelectorAll('.scenario-tab')[index].classList.add('active');
+        }
+    </script>
+</body>
+</html>
