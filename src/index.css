@@ -116,8 +116,20 @@ body {
   padding-left: 20px;
 }
 
-.success {
+.output.success {
   color: #3fb950;
+}
+
+.output.error {
+  color: #f85149;
+}
+
+.output.staged {
+  color: #f0883e;
+}
+
+.output.untracked {
+  color: #f85149;
 }
 
 .terminal-input {
