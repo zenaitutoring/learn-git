@@ -6,7 +6,8 @@ Tracks all tasks. The orchestrator maintains this file.
 
 | ID | Task Name | Priority | Phase | Status | Link |
 |:---|:----------|:---------|:------|:-------|:-----|
-| T006 | Focused Tooltip Tour | 1 | — | PLANNING | [main.md](./planning/T006-tooltip-tour/main.md) |
+
+_No active tasks._
 
 Next available task id: T007
 
@@ -34,6 +35,7 @@ T001 (Infrastructure) ─── COMPLETE
 | T003 | Graph Visualization | 2026-02-06 | [main.md](./completed/T003-graph-visualization/main.md) |
 | T004 | Git Merge & Log | 2026-02-06 | [main.md](./completed/T004-advanced-git-operations/main.md) |
 | T005 | Guided Tutorial Mode | 2026-02-06 | [main.md](./completed/T005-guided-tutorial/main.md) |
+| T006 | Focused Tooltip Tour | 2026-02-06 | [main.md](./completed/T006-tooltip-tour/main.md) |
 
 ---
 
